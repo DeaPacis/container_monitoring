@@ -3,6 +3,7 @@ package main
 import (
 	"backend/db"
 	"backend/handlers"
+	"github.com/rs/cors"
 	"log"
 	"net/http"
 )
@@ -27,7 +28,16 @@ func main() {
 		}
 	})
 
+	corsHandler := cors.New(cors.Options{
+		AllowedOrigins:   []string{"http://localhost:3000"},
+		AllowedMethods:   []string{"GET", "PUT"},
+		AllowedHeaders:   []string{"Content-Type"},
+		AllowCredentials: true,
+	})
+
+	handler := corsHandler.Handler(http.DefaultServeMux)
+
 	port := "8080"
 	log.Println("Backend API running on port", port)
-	log.Fatal(http.ListenAndServe(":"+port, nil))
+	log.Fatal(http.ListenAndServe(":"+port, handler))
 }

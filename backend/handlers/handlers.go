@@ -8,6 +8,8 @@ import (
 )
 
 func GetPingResults(w http.ResponseWriter, r *http.Request) {
+	log.Println("Frontend asked for table")
+
 	rows, err := db.Db.Query("SELECT * FROM Containers ORDER BY last_checked DESC")
 	if err != nil {
 		log.Println(err)
@@ -32,6 +34,8 @@ func GetPingResults(w http.ResponseWriter, r *http.Request) {
 }
 
 func PutPingResult(w http.ResponseWriter, r *http.Request) {
+	log.Println("Pinger sent ping info")
+
 	var results []db.PingResult
 
 	if err := json.NewDecoder(r.Body).Decode(&results); err != nil {
