@@ -6,7 +6,7 @@ interface PingResult {
     last_checked: string;
 }
 
-const backendUrl = process.env.REACT_APP_API_URL || "http://localhost:8090/ping-table";
+const backendUrl = process.env.REACT_APP_API_URL || "http://localhost:8090";
 
 const PingTable: React.FC = () => {
     const [pingResults, setPingResults] = useState<PingResult[]>([]);
@@ -65,11 +65,15 @@ const tableHeaderStyle: React.CSSProperties = {
     padding: "8px",
     backgroundColor: "#0075FD",
     color: "white",
+    fontFamily: "'Poppins', sans-serif",
+    fontWeight: 500,
     textAlign: "left"
 };
 
 const tableCellStyle: React.CSSProperties = {
     border: "1px solid black",
+    fontFamily: "'Heebo', sans-serif",
+    fontWeight: 400,
     padding: "8px"
 };
 
