@@ -1,37 +1,48 @@
 package containers
 
 import (
+	"context"
+	"github.com/docker/docker/api/types/container"
 	"log"
-	"os/exec"
 	"pinger/models"
-	"strings"
+
+	"github.com/docker/docker/client"
 )
 
 func GetContainers() ([]models.PingResult, error) {
-	cmd := exec.Command("docker", "ps", "-q")
-	output, err := cmd.Output()
+	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+	if err != nil {
+		return nil, err
+	}
+	defer cli.Close()
+
+	containers, err := cli.ContainerList(context.Background(), container.ListOptions{All: true})
 	if err != nil {
 		return nil, err
 	}
 
-	containerIDs := strings.Fields(string(output))
 	var results []models.PingResult
 
-	for _, id := range containerIDs {
-		cmd := exec.Command("docker", "inspect", "-f", "{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}", id)
-		ipOutput, err := cmd.Output()
+	for _, c := range containers {
+		inspect, err := cli.ContainerInspect(context.Background(), c.ID)
 		if err != nil {
 			log.Println(err)
 			continue
 		}
 
-		ip := strings.TrimSpace(string(ipOutput))
-		if ip == "" {
-			log.Printf("Container %s has no IP\n", id)
+		var ipAddress string
+		for _, network := range inspect.NetworkSettings.Networks {
+			ipAddress = network.IPAddress
+			break
+		}
+		if ipAddress == "" {
 			continue
 		}
 
-		results = append(results, models.PingResult{ContainerID: id, IPAddress: ip})
+		results = append(results, models.PingResult{
+			ContainerID: c.ID[:12],
+			IPAddress:   ipAddress,
+		})
 	}
 
 	return results, nil
