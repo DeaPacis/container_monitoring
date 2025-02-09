@@ -5,12 +5,13 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"os"
 	"pinger/models"
 )
 
-const backendURL = "http://localhost:8080/ping"
-
 func SendResult(results []models.PingResult) {
+	backendURL := os.Getenv("BACKEND_URL")
+
 	data, err := json.Marshal(results)
 	if err != nil {
 		log.Println(err)
