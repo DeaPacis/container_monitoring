@@ -6,12 +6,14 @@ interface PingResult {
     last_checked: string;
 }
 
+const backendUrl = process.env.REACT_APP_API_URL || "http://localhost:8090/ping-table";
+
 const PingTable: React.FC = () => {
     const [pingResults, setPingResults] = useState<PingResult[]>([]);
 
     const fetchPingResults = async () => {
         try {
-            const response = await fetch("http://localhost:8080/ping-table");
+            const response = await fetch(backendUrl + "/ping-table");
             if (!response.ok) throw new Error("Failed to fetch data");
 
             const data = await response.json();
@@ -40,7 +42,7 @@ const PingTable: React.FC = () => {
                 <thead>
                 <tr>
                     <th style={tableHeaderStyle}>IP Address</th>
-                    <th style={tableHeaderStyle}>Response Time (ms)</th>
+                    <th style={tableHeaderStyle}>Response Time (us)</th>
                     <th style={tableHeaderStyle}>Last Checked</th>
                 </tr>
                 </thead>
@@ -61,7 +63,7 @@ const PingTable: React.FC = () => {
 const tableHeaderStyle: React.CSSProperties = {
     border: "1px solid black",
     padding: "8px",
-    backgroundColor: "#4169E1",
+    backgroundColor: "#0075FD",
     color: "white",
     textAlign: "left"
 };
